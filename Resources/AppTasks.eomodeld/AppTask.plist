@@ -1,0 +1,67 @@
+{
+    attributes = (
+        {
+            columnName = active; 
+            externalType = INT; 
+            name = active; 
+            valueClassName = NSNumber; 
+            valueType = i; 
+        }, 
+        {columnName = "app_name"; name = appName; prototypeName = longText; }, 
+        {
+            allowsNull = Y; 
+            columnName = "check_name"; 
+            name = checkName; 
+            prototypeName = varchar255; 
+        }, 
+        {
+            allowsNull = N; 
+            columnName = "class_name"; 
+            name = className; 
+            prototypeName = varchar255; 
+        }, 
+        {
+            columnName = "interval_name"; 
+            name = intervalName; 
+            prototypeName = longText; 
+            width = 63; 
+        }, 
+        {columnName = "method_name"; name = methodName; prototypeName = varchar255; }, 
+        {
+            allowsNull = Y; 
+            columnName = "method_params"; 
+            name = methodParams; 
+            prototypeName = varchar255; 
+        }, 
+        {allowsNull = N; columnName = pk; name = pk; prototypeName = id; }, 
+        {columnName = "task_name"; name = taskName; prototypeName = longText; }
+    ); 
+    attributesUsedForLocking = (pk); 
+    className = "org.opencalaccess.apptasks.eo.AppTask"; 
+    classProperties = (
+        active, 
+        appName, 
+        checkName, 
+        className, 
+        instances, 
+        intervalName, 
+        methodName, 
+        methodParams, 
+        taskName
+    ); 
+    externalName = "app_tasks"; 
+    fetchSpecificationDictionary = {}; 
+    name = AppTask; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            deleteRule = EODeleteRuleCascade; 
+            destination = AppTaskInstance; 
+            isToMany = Y; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = taskPk; sourceAttribute = pk; }); 
+            name = instances; 
+            ownsDestination = Y; 
+        }
+    ); 
+}

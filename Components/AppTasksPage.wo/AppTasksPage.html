@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <title>App Tasks</title>
+    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin = "anonymous" />
+    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity = "sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin = "anonymous" />
+    <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity = "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin = "anonymous">
+    </script>
+    <style>.table-striped { width: auto !important; } 
+                                  		td, th { text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div style = "padding: 25px 25px 25px 25px;">
+      <p>
+        <wo:if condition = "$displayTasksPerfs">
+          <wo:link action = "$showTaskDefns">Defns</wo:link>
+        </wo:if>
+        <wo:else>Defns</wo:else>
+        - 
+        <wo:if condition = "$displayTasksDefns">
+          <wo:link action = "$showTaskPerfs">Perfs</wo:link>
+        </wo:if>
+        <wo:else>Perfs</wo:else>
+        - 
+        <wo:link pageName="AppTaskPage">All Instances</wo:link> -
+        <wo:link action = "$createNewTask">New Task</wo:link>
+      </p>
+      <table class = "table table-striped">
+        <caption>App Tasks</caption>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <wo:if condition = "$displayTasksDefns">
+              <th>Interval</th>
+              <th>Active</th>
+              <th>Enable?</th>
+              <th>Launch?</th>
+            </wo:if>
+            <wo:if condition = "$displayTasksPerfs">
+              <th>Running #</th>
+              <th>Ran #</th>
+              <th>Last Run</th>
+              <td>&nbsp;</td>
+              <th>Last Result</th>
+              <th>Last Runtime</th>
+            </wo:if>
+          </tr>
+        </thead>
+        <tbody>
+          <wo:loop list = "$tasks" item = "$task">
+            <tr>
+              <td>
+                <wo:ERXDataHyperlink pageName = "AppTaskPage" task = "$task"><wo:str value = "$task.fullName" /></wo:ERXDataHyperlink>
+              </td>
+              <wo:if condition = "$displayTasksDefns">
+                <td><wo:str value = "$task.intervalName" /></td>
+                <td><wo:str value = "$task.active" numberformat = "0" /></td>
+                <td>
+                  <wo:link action = "$flipEnableTask">
+                    <wo:if condition = "$task.enabled">stop</wo:if>
+                    <wo:else>go</wo:else>
+                  </wo:link>
+                </td>
+                <td>
+                  <wo:link action = "$pushTaskLaunch">push</wo:link>
+                </td>
+              </wo:if>
+              <wo:if condition = "$displayTasksPerfs">
+                <td><wo:str value = "$task.runningInstances.@count" numberformat = "0" /></td>
+                <td><wo:str value = "$task.instances.@count" numberformat = "0" /></td>
+                <td><wo:str value = "$task.latestInstance.endDate" dateformat = "%Y-%m-%d %H:%M:%S" /></td>
+                <td><wo:str value = "$task.lastInstanceAge" /></td>
+                <td><wo:str value = "$task.latestInstance.result" numberformat = "0" /></td>
+                <td>
+                  <wo:str value = "$task.latestInstance.runtime" numberformat = "0" />
+                  <wo:if condition = "$task.latestInstance.runtime">&nbsp;s</wo:if>
+                </td>
+              </wo:if>
+            </tr>
+          </wo:loop>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

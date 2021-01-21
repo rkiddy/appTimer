@@ -1,0 +1,13 @@
+{
+    EOModelVersion = "2.1"; 
+    adaptorName = JDBC; 
+    connectionDictionary = {URL = ""; driver = ""; password = ""; username = ray; }; 
+    entities = (
+        {className = "org.opencalaccess.apptasks.eo.AppTask"; name = AppTask; }, 
+        {
+            className = "org.opencalaccess.apptasks.eo.AppTaskInstance"; 
+            name = AppTaskInstance; 
+        }
+    ); 
+    userInfo = {"_EntityModeler" = {reverseEngineered = Y; }; }; 
+}

@@ -1,0 +1,37 @@
+{
+    attributes = (
+        {
+            allowsNull = Y; 
+            columnName = "end_time"; 
+            name = endTime; 
+            prototypeName = longNumber; 
+        }, 
+        {allowsNull = Y; columnName = note; name = note; prototypeName = longText; }, 
+        {allowsNull = N; columnName = pk; name = pk; prototypeName = id; }, 
+        {
+            allowsNull = Y; 
+            columnName = result; 
+            name = result; 
+            prototypeName = intNumber; 
+        }, 
+        {columnName = "start_time"; name = startTime; prototypeName = longNumber; }, 
+        {columnName = "task_pk"; name = taskPk; prototypeName = id; }
+    ); 
+    attributesUsedForLocking = (pk, taskPk); 
+    className = "org.opencalaccess.apptasks.eo.AppTaskInstance"; 
+    classProperties = (endTime, note, result, startTime, task); 
+    externalName = "app_task_instances"; 
+    fetchSpecificationDictionary = {}; 
+    name = AppTaskInstance; 
+    primaryKeyAttributes = (pk); 
+    relationships = (
+        {
+            destination = AppTask; 
+            isMandatory = Y; 
+            isToMany = N; 
+            joinSemantic = EOInnerJoin; 
+            joins = ({destinationAttribute = pk; sourceAttribute = taskPk; }); 
+            name = task; 
+        }
+    ); 
+}

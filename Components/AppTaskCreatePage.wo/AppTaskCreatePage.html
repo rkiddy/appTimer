@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>App Tasks</title>
+    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin = "anonymous" />
+    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity = "sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin = "anonymous" />
+    <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity = "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin = "anonymous">
+    </script>
+    <style>.table-striped { width: auto !important; } 
+    </style>
+  </head>
+  <body>
+    <div style = "padding: 25px 25px 25px 25px;">
+      <wo:form>
+        <table class = "table">
+          <tr>
+            <th>taskName</th>
+            <td><wo:textfield size = "100" value = "$taskName" /></td>
+          </tr>
+          <tr>
+            <th>appName</th>
+            <td><wo:textfield size = "100" value = "$appName" /></td>
+          </tr>
+          <tr>
+            <th>className</th>
+            <td><wo:textfield size = "100" value = "$className" /></td>
+          </tr>
+          <tr>
+            <th>methodName</th>
+            <td><wo:textfield size = "100" value = "$methodName" /></td>
+          </tr>
+          <tr>
+            <th>checkMethodName</th>
+            <td><wo:textfield size = "100" value = "$checkMethodName" /></td>
+          </tr>
+          <tr>
+            <th>intervalName</th>
+            <td>
+              <wo:select list = "$availableIntervalNames" item = "$anIntervalName" selection = "$selectedIntervalName" noSelectedObject = "none" />
+              or, giving a specified number of minutes or hours: 
+              <wo:select list = "$availableIntervalPrefixes" item = "$anIntervalPrefix" selection = "$selectedIntervalName" noSelectedObject = "none" />
+              <wo:textfield value = "$intervalNum" size = "5" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><wo:submit value = "Create" action = "$createTask" /></td>
+          </tr>
+        </table>
+      </wo:form>
+    </div>
+  </body>
+</html>
