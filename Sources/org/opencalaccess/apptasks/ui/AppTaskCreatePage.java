@@ -25,7 +25,6 @@ public class AppTaskCreatePage extends ERXComponent {
 	public String appName;
 	public String className;
 	public String methodName;
-	public String methodParams;
 	public String checkMethodName;
 
 	public NSArray<String> availableIntervalNames = new NSArray<>(
@@ -68,10 +67,6 @@ public class AppTaskCreatePage extends ERXComponent {
 				intervalName,
 				methodName,
 				taskName);
-
-		if (methodParams != null) {
-			task.setMethodParams(methodParams);
-		}
 
 		if (checkMethodName != null) {
 			task.setCheckName(checkMethodName);

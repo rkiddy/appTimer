@@ -25,7 +25,6 @@ public abstract class _AppTask extends  ERXGenericRecord {
   public static final ERXKey<String> CLASS_NAME = new ERXKey<String>("className", Type.Attribute);
   public static final ERXKey<String> INTERVAL_NAME = new ERXKey<String>("intervalName", Type.Attribute);
   public static final ERXKey<String> METHOD_NAME = new ERXKey<String>("methodName", Type.Attribute);
-  public static final ERXKey<String> METHOD_PARAMS = new ERXKey<String>("methodParams", Type.Attribute);
   public static final ERXKey<String> TASK_NAME = new ERXKey<String>("taskName", Type.Attribute);
 
   // Relationship Keys
@@ -38,7 +37,6 @@ public abstract class _AppTask extends  ERXGenericRecord {
   public static final String CLASS_NAME_KEY = CLASS_NAME.key();
   public static final String INTERVAL_NAME_KEY = INTERVAL_NAME.key();
   public static final String METHOD_NAME_KEY = METHOD_NAME.key();
-  public static final String METHOD_PARAMS_KEY = METHOD_PARAMS.key();
   public static final String TASK_NAME_KEY = TASK_NAME.key();
 
   // Relationships
@@ -106,15 +104,6 @@ public abstract class _AppTask extends  ERXGenericRecord {
   public void setMethodName(String value) {
     log.debug( "updating methodName from {} to {}", methodName(), value);
     takeStoredValueForKey(value, _AppTask.METHOD_NAME_KEY);
-  }
-
-  public String methodParams() {
-    return (String) storedValueForKey(_AppTask.METHOD_PARAMS_KEY);
-  }
-
-  public void setMethodParams(String value) {
-    log.debug( "updating methodParams from {} to {}", methodParams(), value);
-    takeStoredValueForKey(value, _AppTask.METHOD_PARAMS_KEY);
   }
 
   public String taskName() {

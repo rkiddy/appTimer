@@ -21,6 +21,7 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
   // Attribute Keys
   public static final ERXKey<Long> END_TIME = new ERXKey<Long>("endTime", Type.Attribute);
   public static final ERXKey<String> NOTE = new ERXKey<String>("note", Type.Attribute);
+  public static final ERXKey<Long> QUEUE_TIME = new ERXKey<Long>("queueTime", Type.Attribute);
   public static final ERXKey<Integer> RESULT = new ERXKey<Integer>("result", Type.Attribute);
   public static final ERXKey<Long> START_TIME = new ERXKey<Long>("startTime", Type.Attribute);
 
@@ -30,6 +31,7 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
   // Attributes
   public static final String END_TIME_KEY = END_TIME.key();
   public static final String NOTE_KEY = NOTE.key();
+  public static final String QUEUE_TIME_KEY = QUEUE_TIME.key();
   public static final String RESULT_KEY = RESULT.key();
   public static final String START_TIME_KEY = START_TIME.key();
 
@@ -62,6 +64,15 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
   public void setNote(String value) {
     log.debug( "updating note from {} to {}", note(), value);
     takeStoredValueForKey(value, _AppTaskInstance.NOTE_KEY);
+  }
+
+  public Long queueTime() {
+    return (Long) storedValueForKey(_AppTaskInstance.QUEUE_TIME_KEY);
+  }
+
+  public void setQueueTime(Long value) {
+    log.debug( "updating queueTime from {} to {}", queueTime(), value);
+    takeStoredValueForKey(value, _AppTaskInstance.QUEUE_TIME_KEY);
   }
 
   public Integer result() {
@@ -106,10 +117,10 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
   }
 
 
-  public static AppTaskInstance createAppTaskInstance(EOEditingContext editingContext, Long startTime
+  public static AppTaskInstance createAppTaskInstance(EOEditingContext editingContext, Long queueTime
 , org.opencalaccess.apptasks.eo.AppTask task) {
     AppTaskInstance eo = (AppTaskInstance) EOUtilities.createAndInsertInstance(editingContext, _AppTaskInstance.ENTITY_NAME);
-    eo.setStartTime(startTime);
+    eo.setQueueTime(queueTime);
     eo.setTaskRelationship(task);
     return eo;
   }

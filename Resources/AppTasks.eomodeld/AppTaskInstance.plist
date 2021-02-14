@@ -3,23 +3,36 @@
         {
             allowsNull = Y; 
             columnName = "end_time"; 
+            externalType = BIGINT; 
             name = endTime; 
             prototypeName = longNumber; 
         }, 
         {allowsNull = Y; columnName = note; name = note; prototypeName = longText; }, 
         {allowsNull = N; columnName = pk; name = pk; prototypeName = id; }, 
         {
+            columnName = "queue_time"; 
+            externalType = BIGINT; 
+            name = queueTime; 
+            prototypeName = longNumber; 
+        }, 
+        {
             allowsNull = Y; 
             columnName = result; 
             name = result; 
             prototypeName = intNumber; 
         }, 
-        {columnName = "start_time"; name = startTime; prototypeName = longNumber; }, 
+        {
+            allowsNull = Y; 
+            columnName = "start_time"; 
+            externalType = BIGINT; 
+            name = startTime; 
+            prototypeName = longNumber; 
+        }, 
         {columnName = "task_pk"; name = taskPk; prototypeName = id; }
     ); 
     attributesUsedForLocking = (pk, taskPk); 
     className = "org.opencalaccess.apptasks.eo.AppTaskInstance"; 
-    classProperties = (endTime, note, result, startTime, task); 
+    classProperties = (endTime, note, queueTime, result, startTime, task); 
     externalName = "app_task_instances"; 
     fetchSpecificationDictionary = {}; 
     name = AppTaskInstance; 

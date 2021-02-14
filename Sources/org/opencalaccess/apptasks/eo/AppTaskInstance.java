@@ -33,4 +33,20 @@ public class AppTaskInstance extends _AppTaskInstance {
 			return new NSTimestamp(new Date(this.endTime()));
 		}
 	}
+
+	public Integer runningTime() {
+		if (this.endTime() != null || this.startTime() == null) {
+			return null;
+		} else {
+			return (int)(System.currentTimeMillis() - this.startTime()) / 1000;
+		}
+	}
+
+	public Integer queuedTime() {
+		if (this.endTime() != null) {
+			return null;
+		} else {
+			return (int)(System.currentTimeMillis() - this.queuedTime()) / 1000;
+		}
+	}
 }

@@ -27,12 +27,6 @@
             width = 63; 
         }, 
         {columnName = "method_name"; name = methodName; prototypeName = varchar255; }, 
-        {
-            allowsNull = Y; 
-            columnName = "method_params"; 
-            name = methodParams; 
-            prototypeName = varchar255; 
-        }, 
         {allowsNull = N; columnName = pk; name = pk; prototypeName = id; }, 
         {columnName = "task_name"; name = taskName; prototypeName = longText; }
     ); 
@@ -46,7 +40,6 @@
         instances, 
         intervalName, 
         methodName, 
-        methodParams, 
         taskName
     ); 
     externalName = "app_tasks"; 

@@ -6,7 +6,6 @@ import org.opencalaccess.apptasks.eo.AppTask;
 import org.opencalaccess.apptasks.eo.AppTaskInstance;
 
 import com.webobjects.eocontrol.EOEditingContext;
-import com.webobjects.foundation.NSArray;
 
 import er.extensions.eof.ERXEC;
 
@@ -49,23 +48,7 @@ public class AppTasked extends Thread {
 			@SuppressWarnings("unchecked")
 			Object targetObj = targetClazz.getDeclaredConstructor().newInstance();
 
-			String methodParams = task.methodParams();
-
-			if (methodParams != null && ! methodParams.isEmpty()) {
-
-				Object[] paramsObjs = NSArray.componentsSeparatedByString(task.methodParams(), " ").toArray();
-
-				String[] params = new String[paramsObjs.length];
-
-				for (int idx = 0; idx < paramsObjs.length; idx++) {
-					params[idx] = (String)paramsObjs[idx];
-				}
-
-				targetMethod.invoke(targetObj, new Object[]{params});
-
-			} else {
-				targetMethod.invoke(targetObj, new Object[]{});
-			}
+			targetMethod.invoke(targetObj, new Object[]{});
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
