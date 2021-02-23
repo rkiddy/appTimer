@@ -3,9 +3,9 @@
     adaptorName = JDBC; 
     connectionDictionary = {URL = ""; driver = ""; password = ""; username = ray; }; 
     entities = (
-        {className = "org.opencalaccess.apptasks.eo.AppTask"; name = AppTask; }, 
+        {className = "org.opencalaccess.timer.eo.AppTask"; name = AppTask; }, 
         {
-            className = "org.opencalaccess.apptasks.eo.AppTaskInstance"; 
+            className = "org.opencalaccess.timer.eo.AppTaskInstance"; 
             name = AppTaskInstance; 
         }
     ); 

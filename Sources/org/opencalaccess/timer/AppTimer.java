@@ -1,7 +1,7 @@
-package org.opencalaccess.apptasks;
+package org.opencalaccess.timer;
 
-import org.opencalaccess.apptasks.eo.AppTask;
-import org.opencalaccess.apptasks.eo.AppTaskInstance;
+import org.opencalaccess.timer.eo.AppTask;
+import org.opencalaccess.timer.eo.AppTaskInstance;
 
 import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.foundation.NSArray;
@@ -32,6 +32,10 @@ public class AppTimer extends ERXFrameworkPrincipal {
 	@Override
 	public void finishInitialization() {
 		log.debug("AppTimer loaded");
+	}
+
+	public static boolean verbose() {
+		return System.getProperty("AppTaskerVerbose", "false").equalsIgnoreCase("true");
 	}
 
 	public static NSDictionary<String,AppTask> tasksNeedingRun(EOEditingContext ec) {
@@ -81,25 +85,11 @@ public class AppTimer extends ERXFrameworkPrincipal {
 
 						runnables.put(task.fullName(), task);
 
-						U.log("for: ",
-								task,
-								" testing " +
-								task.intervalName(),
-								" (",
-								interval_diff,
-								"), diff = ",
-								diff,
-								", so RUN");
+						U.log("for: ", task, " testing ", task.intervalName(), " (", interval_diff, "), diff = ", diff, ", so RUN");
 					} else {
-						U.log("for: ",
-								task,
-								" testing " +
-								task.intervalName(),
-								" (",
-								interval_diff,
-								"), diff = ",
-								diff,
-								", so DO NOT run");
+						if (verbose()) {
+							U.log("for: ", task, " testing ", task.intervalName(), " (", interval_diff, "), diff = ", diff, ", so DO NOT run");
+						}
 					}
 				}
 
@@ -120,7 +110,9 @@ public class AppTimer extends ERXFrameworkPrincipal {
 						runnables.put(task.fullName(), task);
 						U.log("for: ", task, " testing against ", minutes, " MINUTES (", interval, "), diff = ", diff, ", greater, so RUN");
 					} else {
-						U.log("for: ", task, " testing against ", minutes, " MINUTES (", interval, "), diff = ", diff, ", not greater, so DO NOT run");
+						if (verbose()) {
+							U.log("for: ", task, " testing against ", minutes, " MINUTES (", interval, "), diff = ", diff, ", not greater, so DO NOT run");
+						}
 					}
 				}
 
@@ -141,7 +133,9 @@ public class AppTimer extends ERXFrameworkPrincipal {
 						runnables.put(task.fullName(), task);
 						U.log("for: ", task, " testing against ", hours, " HOURS (", interval, "), diff = ", diff, ", greater, so RUN");
 					} else {
-						U.log("for: ", task, " testing against ", hours, " HOURS (", interval, "), diff = ", diff, ", greater, so DO NOT run");
+						if (verbose()) {
+							U.log("for: ", task, " testing against ", hours, " HOURS (", interval, "), diff = ", diff, ", greater, so DO NOT run");
+						}
 					}
 				}
 			}

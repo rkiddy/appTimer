@@ -1,4 +1,4 @@
-package org.opencalaccess.apptasks.eo;
+package org.opencalaccess.timer.eo;
 
 import java.util.Date;
 

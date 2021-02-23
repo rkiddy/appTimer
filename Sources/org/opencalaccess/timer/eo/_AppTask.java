@@ -1,5 +1,5 @@
 // DO NOT EDIT.  Make changes to AppTask.java instead.
-package org.opencalaccess.apptasks.eo;
+package org.opencalaccess.timer.eo;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -28,7 +28,7 @@ public abstract class _AppTask extends  ERXGenericRecord {
   public static final ERXKey<String> TASK_NAME = new ERXKey<String>("taskName", Type.Attribute);
 
   // Relationship Keys
-  public static final ERXKey<org.opencalaccess.apptasks.eo.AppTaskInstance> INSTANCES = new ERXKey<org.opencalaccess.apptasks.eo.AppTaskInstance>("instances", Type.ToManyRelationship);
+  public static final ERXKey<org.opencalaccess.timer.eo.AppTaskInstance> INSTANCES = new ERXKey<org.opencalaccess.timer.eo.AppTaskInstance>("instances", Type.ToManyRelationship);
 
   // Attributes
   public static final String ACTIVE_KEY = ACTIVE.key();
@@ -115,23 +115,23 @@ public abstract class _AppTask extends  ERXGenericRecord {
     takeStoredValueForKey(value, _AppTask.TASK_NAME_KEY);
   }
 
-  public NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance> instances() {
-    return (NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance>)storedValueForKey(_AppTask.INSTANCES_KEY);
+  public NSArray<org.opencalaccess.timer.eo.AppTaskInstance> instances() {
+    return (NSArray<org.opencalaccess.timer.eo.AppTaskInstance>)storedValueForKey(_AppTask.INSTANCES_KEY);
   }
 
-  public NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance> instances(EOQualifier qualifier) {
+  public NSArray<org.opencalaccess.timer.eo.AppTaskInstance> instances(EOQualifier qualifier) {
     return instances(qualifier, null, false);
   }
 
-  public NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance> instances(EOQualifier qualifier, boolean fetch) {
+  public NSArray<org.opencalaccess.timer.eo.AppTaskInstance> instances(EOQualifier qualifier, boolean fetch) {
     return instances(qualifier, null, fetch);
   }
 
-  public NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance> instances(EOQualifier qualifier, NSArray<EOSortOrdering> sortOrderings, boolean fetch) {
-    NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance> results;
+  public NSArray<org.opencalaccess.timer.eo.AppTaskInstance> instances(EOQualifier qualifier, NSArray<EOSortOrdering> sortOrderings, boolean fetch) {
+    NSArray<org.opencalaccess.timer.eo.AppTaskInstance> results;
     if (fetch) {
       EOQualifier fullQualifier;
-      EOQualifier inverseQualifier = ERXQ.equals(org.opencalaccess.apptasks.eo.AppTaskInstance.TASK_KEY, this);
+      EOQualifier inverseQualifier = ERXQ.equals(org.opencalaccess.timer.eo.AppTaskInstance.TASK_KEY, this);
 
       if (qualifier == null) {
         fullQualifier = inverseQualifier;
@@ -140,29 +140,29 @@ public abstract class _AppTask extends  ERXGenericRecord {
         fullQualifier = ERXQ.and(qualifier, inverseQualifier);
       }
 
-      results = org.opencalaccess.apptasks.eo.AppTaskInstance.fetchAppTaskInstances(editingContext(), fullQualifier, sortOrderings);
+      results = org.opencalaccess.timer.eo.AppTaskInstance.fetchAppTaskInstances(editingContext(), fullQualifier, sortOrderings);
     }
     else {
       results = instances();
       if (qualifier != null) {
-        results = (NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance>)EOQualifier.filteredArrayWithQualifier(results, qualifier);
+        results = (NSArray<org.opencalaccess.timer.eo.AppTaskInstance>)EOQualifier.filteredArrayWithQualifier(results, qualifier);
       }
       if (sortOrderings != null) {
-        results = (NSArray<org.opencalaccess.apptasks.eo.AppTaskInstance>)EOSortOrdering.sortedArrayUsingKeyOrderArray(results, sortOrderings);
+        results = (NSArray<org.opencalaccess.timer.eo.AppTaskInstance>)EOSortOrdering.sortedArrayUsingKeyOrderArray(results, sortOrderings);
       }
     }
     return results;
   }
 
-  public void addToInstances(org.opencalaccess.apptasks.eo.AppTaskInstance object) {
+  public void addToInstances(org.opencalaccess.timer.eo.AppTaskInstance object) {
     includeObjectIntoPropertyWithKey(object, _AppTask.INSTANCES_KEY);
   }
 
-  public void removeFromInstances(org.opencalaccess.apptasks.eo.AppTaskInstance object) {
+  public void removeFromInstances(org.opencalaccess.timer.eo.AppTaskInstance object) {
     excludeObjectFromPropertyWithKey(object, _AppTask.INSTANCES_KEY);
   }
 
-  public void addToInstancesRelationship(org.opencalaccess.apptasks.eo.AppTaskInstance object) {
+  public void addToInstancesRelationship(org.opencalaccess.timer.eo.AppTaskInstance object) {
     log.debug("adding {} to instances relationship", object);
     if (er.extensions.eof.ERXGenericRecord.InverseRelationshipUpdater.updateInverseRelationships()) {
       addToInstances(object);
@@ -172,7 +172,7 @@ public abstract class _AppTask extends  ERXGenericRecord {
     }
   }
 
-  public void removeFromInstancesRelationship(org.opencalaccess.apptasks.eo.AppTaskInstance object) {
+  public void removeFromInstancesRelationship(org.opencalaccess.timer.eo.AppTaskInstance object) {
     log.debug("removing {} from instances relationship", object);
     if (er.extensions.eof.ERXGenericRecord.InverseRelationshipUpdater.updateInverseRelationships()) {
       removeFromInstances(object);
@@ -182,18 +182,18 @@ public abstract class _AppTask extends  ERXGenericRecord {
     }
   }
 
-  public org.opencalaccess.apptasks.eo.AppTaskInstance createInstancesRelationship() {
-    EOEnterpriseObject eo = EOUtilities.createAndInsertInstance(editingContext(),  org.opencalaccess.apptasks.eo.AppTaskInstance.ENTITY_NAME );
+  public org.opencalaccess.timer.eo.AppTaskInstance createInstancesRelationship() {
+    EOEnterpriseObject eo = EOUtilities.createAndInsertInstance(editingContext(),  org.opencalaccess.timer.eo.AppTaskInstance.ENTITY_NAME );
     addObjectToBothSidesOfRelationshipWithKey(eo, _AppTask.INSTANCES_KEY);
-    return (org.opencalaccess.apptasks.eo.AppTaskInstance) eo;
+    return (org.opencalaccess.timer.eo.AppTaskInstance) eo;
   }
 
-  public void deleteInstancesRelationship(org.opencalaccess.apptasks.eo.AppTaskInstance object) {
+  public void deleteInstancesRelationship(org.opencalaccess.timer.eo.AppTaskInstance object) {
     removeObjectFromBothSidesOfRelationshipWithKey(object, _AppTask.INSTANCES_KEY);
   }
 
   public void deleteAllInstancesRelationships() {
-    Enumeration<org.opencalaccess.apptasks.eo.AppTaskInstance> objects = instances().immutableClone().objectEnumerator();
+    Enumeration<org.opencalaccess.timer.eo.AppTaskInstance> objects = instances().immutableClone().objectEnumerator();
     while (objects.hasMoreElements()) {
       deleteInstancesRelationship(objects.nextElement());
     }

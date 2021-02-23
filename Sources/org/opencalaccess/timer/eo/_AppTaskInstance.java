@@ -1,5 +1,5 @@
 // DO NOT EDIT.  Make changes to AppTaskInstance.java instead.
-package org.opencalaccess.apptasks.eo;
+package org.opencalaccess.timer.eo;
 
 import com.webobjects.eoaccess.*;
 import com.webobjects.eocontrol.*;
@@ -26,7 +26,7 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
   public static final ERXKey<Long> START_TIME = new ERXKey<Long>("startTime", Type.Attribute);
 
   // Relationship Keys
-  public static final ERXKey<org.opencalaccess.apptasks.eo.AppTask> TASK = new ERXKey<org.opencalaccess.apptasks.eo.AppTask>("task", Type.ToOneRelationship);
+  public static final ERXKey<org.opencalaccess.timer.eo.AppTask> TASK = new ERXKey<org.opencalaccess.timer.eo.AppTask>("task", Type.ToOneRelationship);
 
   // Attributes
   public static final String END_TIME_KEY = END_TIME.key();
@@ -93,21 +93,21 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
     takeStoredValueForKey(value, _AppTaskInstance.START_TIME_KEY);
   }
 
-  public org.opencalaccess.apptasks.eo.AppTask task() {
-    return (org.opencalaccess.apptasks.eo.AppTask)storedValueForKey(_AppTaskInstance.TASK_KEY);
+  public org.opencalaccess.timer.eo.AppTask task() {
+    return (org.opencalaccess.timer.eo.AppTask)storedValueForKey(_AppTaskInstance.TASK_KEY);
   }
 
-  public void setTask(org.opencalaccess.apptasks.eo.AppTask value) {
+  public void setTask(org.opencalaccess.timer.eo.AppTask value) {
     takeStoredValueForKey(value, _AppTaskInstance.TASK_KEY);
   }
 
-  public void setTaskRelationship(org.opencalaccess.apptasks.eo.AppTask value) {
+  public void setTaskRelationship(org.opencalaccess.timer.eo.AppTask value) {
     log.debug("updating task from {} to {}", task(), value);
     if (er.extensions.eof.ERXGenericRecord.InverseRelationshipUpdater.updateInverseRelationships()) {
       setTask(value);
     }
     else if (value == null) {
-      org.opencalaccess.apptasks.eo.AppTask oldValue = task();
+      org.opencalaccess.timer.eo.AppTask oldValue = task();
       if (oldValue != null) {
         removeObjectFromBothSidesOfRelationshipWithKey(oldValue, _AppTaskInstance.TASK_KEY);
       }
@@ -118,7 +118,7 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
 
 
   public static AppTaskInstance createAppTaskInstance(EOEditingContext editingContext, Long queueTime
-, org.opencalaccess.apptasks.eo.AppTask task) {
+, org.opencalaccess.timer.eo.AppTask task) {
     AppTaskInstance eo = (AppTaskInstance) EOUtilities.createAndInsertInstance(editingContext, _AppTaskInstance.ENTITY_NAME);
     eo.setQueueTime(queueTime);
     eo.setTaskRelationship(task);

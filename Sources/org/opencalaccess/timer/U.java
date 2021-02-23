@@ -1,4 +1,4 @@
-package org.opencalaccess.apptasks;
+package org.opencalaccess.timer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

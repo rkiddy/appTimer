@@ -1,7 +1,7 @@
-package org.opencalaccess.apptasks.ui;
+package org.opencalaccess.timer.ui;
 
-import org.opencalaccess.apptasks.eo.AppTask;
-import org.opencalaccess.apptasks.eo.AppTaskInstance;
+import org.opencalaccess.timer.eo.AppTask;
+import org.opencalaccess.timer.eo.AppTaskInstance;
 
 import com.webobjects.appserver.WOContext;
 import com.webobjects.eocontrol.EOEditingContext;

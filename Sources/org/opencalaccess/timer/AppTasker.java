@@ -1,12 +1,12 @@
-package org.opencalaccess.apptasks;
+package org.opencalaccess.timer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.opencalaccess.apptasks.eo.AppTask;
-import org.opencalaccess.apptasks.eo.AppTaskInstance;
+import org.opencalaccess.timer.eo.AppTask;
+import org.opencalaccess.timer.eo.AppTaskInstance;
 
 import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.foundation.NSArray;
@@ -25,6 +25,10 @@ public class AppTasker extends Thread {
 			this.startupWait = 10;
 			this.intervalWait = 60;
 		}
+	}
+
+	public static boolean verbose() {
+		return System.getProperty("AppTaskerVerbose", "false").equalsIgnoreCase("true");
 	}
 
 	private int startupWait;
@@ -48,8 +52,10 @@ public class AppTasker extends Thread {
 
 			U.log("running instances # ", running.size());
 
-			for (AppTaskInstance instance : running) {
-				U.log("task instance: ", instance);
+			if (verbose()) {
+				for (AppTaskInstance instance : running) {
+					U.log("task instance: ", instance);
+				}
 			}
 
 			tasksToBeLaunched.putAll(AppTimer.tasksNeedingRun(ec));

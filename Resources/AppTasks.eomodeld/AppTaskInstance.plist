@@ -31,7 +31,7 @@
         {columnName = "task_pk"; name = taskPk; prototypeName = id; }
     ); 
     attributesUsedForLocking = (pk, taskPk); 
-    className = "org.opencalaccess.apptasks.eo.AppTaskInstance"; 
+    className = "org.opencalaccess.timer.eo.AppTaskInstance"; 
     classProperties = (endTime, note, queueTime, result, startTime, task); 
     externalName = "app_task_instances"; 
     fetchSpecificationDictionary = {}; 

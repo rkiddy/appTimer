@@ -1,4 +1,4 @@
-<project name="AppTimer" default="build" basedir=".">
+<project name="appTimer" default="build" basedir=".">
 	<target name="build" depends="init.build,build.woframework,javaclient,package" />
 
 	<target name="install" depends="init.install,build.woframework,javaclient" />
@@ -87,7 +87,7 @@
 		<taskdef name="wocompile" classname="org.objectstyle.woproject.ant.WOCompile" />
 
 		<mkdir dir="bin" />
-		<wocompile srcdir="Sources" destdir="bin" includeantruntime="false">
+		<wocompile srcdir="Sources" destdir="bin" includeantruntime="true">
 			<frameworks root="ProjectLocal" embed="false" eclipse="true" />
 			<frameworks root="External" embed="false" eclipse="true" />
 			<frameworks root="Local" embed="false" eclipse="true" />
