@@ -6,24 +6,13 @@
     <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity = "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin = "anonymous">
     </script>
     <style>.table-striped { width: auto !important; } 
-                                  		td, th { text-align: center; }
+                                        		td, th { text-align: center; }
     </style>
   </head>
   <body>
     <div style = "padding: 25px 25px 25px 25px;">
       <p>
-        <wo:if condition = "$displayTasksPerfs">
-          <wo:link action = "$showTaskDefns">Defns</wo:link>
-        </wo:if>
-        <wo:else>Defns</wo:else>
-        - 
-        <wo:if condition = "$displayTasksDefns">
-          <wo:link action = "$showTaskPerfs">Perfs</wo:link>
-        </wo:if>
-        <wo:else>Perfs</wo:else>
-        - 
-        <wo:link pageName="AppTaskPage">All Instances</wo:link> -
-        <wo:link action = "$createNewTask">New Task</wo:link>
+        <wo:link pageName = "AppTaskPage">All Instances</wo:link>
       </p>
       <table class = "table table-striped">
         <caption>App Tasks</caption>

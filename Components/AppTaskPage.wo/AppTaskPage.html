@@ -17,8 +17,9 @@
         <thead>
           <tr>
             <th>Task</th>
-            <th>Start</th>
-            <th>End</th>
+            <th>Queued</th>
+            <th>Started</th>
+            <th>Ended</th>
             <th>Runtime</th>
             <th>Result</th>
             <th>Note</th>
@@ -28,6 +29,7 @@
           <wo:loop list = "$instances" item = "$instance">
             <tr>
               <td><wo:str value = "$instance.task.taskName" /></td>
+              <td><wo:str value = "$instance.queueDate" dateformat = "%Y-%m-%d %H:%M:%S" /></td>
               <td><wo:str value = "$instance.startDate" dateformat = "%Y-%m-%d %H:%M:%S" /></td>
               <td><wo:str value = "$instance.endDate" dateformat = "%Y-%m-%d %H:%M:%S" /></td>
               <td><wo:str value = "$instance.runtime" numberformat = "0" /></td>

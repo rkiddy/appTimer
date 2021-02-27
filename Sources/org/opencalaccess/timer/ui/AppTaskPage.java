@@ -5,6 +5,7 @@ import org.opencalaccess.timer.eo.AppTaskInstance;
 
 import com.webobjects.appserver.WOContext;
 import com.webobjects.eocontrol.EOEditingContext;
+import com.webobjects.eocontrol.EOSortOrdering;
 import com.webobjects.foundation.NSArray;
 
 import er.extensions.components.ERXComponent;
@@ -28,9 +29,9 @@ public class AppTaskPage extends ERXComponent {
 
 	public NSArray<AppTaskInstance> instances() {
 		if (task == null) {
-			return AppTaskInstance.fetchAllAppTaskInstances(ec, AppTaskInstance.START_TIME.descs());
+			return AppTaskInstance.fetchAllAppTaskInstances(ec, AppTaskInstance.QUEUE_TIME.descs());
 		} else {
-			return task.instances();
+			return EOSortOrdering.sortedArrayUsingKeyOrderArray(task.instances(), AppTaskInstance.QUEUE_TIME.descs());
 		}
 	}
 

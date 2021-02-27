@@ -15,7 +15,7 @@ public class AppTaskInstance extends _AppTaskInstance {
 	private static final Logger log = LoggerFactory.getLogger(AppTaskInstance.class);
 
 	public Long runtime() {
-		if (this.endTime() == null) {
+		if (this.endTime() == null || this.startTime() == null) {
 			return null;
 		} else {
 			return (this.endTime() - this.startTime()) / 1000;
@@ -23,7 +23,11 @@ public class AppTaskInstance extends _AppTaskInstance {
 	}
 
 	public NSTimestamp startDate() {
-		return new NSTimestamp(new Date(this.startTime()));
+		if (this.startTime() == null) {
+			return null;
+		} else {
+			return new NSTimestamp(new Date(this.startTime()));
+		}
 	}
 
 	public NSTimestamp endDate() {
@@ -31,6 +35,14 @@ public class AppTaskInstance extends _AppTaskInstance {
 			return null;
 		} else {
 			return new NSTimestamp(new Date(this.endTime()));
+		}
+	}
+
+	public NSTimestamp queueDate() {
+		if (this.queueTime() == null) {
+			return null;
+		} else {
+			return new NSTimestamp(new Date(this.queueTime()));
 		}
 	}
 

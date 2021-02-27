@@ -15,7 +15,23 @@ import er.extensions.eof.ERXEC;
 
 public class AppTasker extends Thread {
 
-	EOEditingContext ec = ERXEC.newEditingContext();
+	public static boolean verbose() {
+		return System.getProperty("AppTaskerVerbose", "false").equalsIgnoreCase("true");
+	}
+
+	public static void initialize() {
+
+		String runAppTasks = System.getProperty(U.APP_TASKER_FEATURE_ENABLED, "false");
+
+		String appTaskStartup =   System.getProperty(U.APP_TASKER_CHECK_STARTUP_WAIT_SECONDS, "30");
+		String appTaskWait =      System.getProperty(U.APP_TASKER_CHECK_INTERVAL_SECONDS, "60");
+
+		U.log(U.APP_TASKER_FEATURE_ENABLED, " = ", runAppTasks);
+
+		if ("YES".equalsIgnoreCase(runAppTasks) || "TRUE".equalsIgnoreCase(runAppTasks)) {
+			(new AppTasker(appTaskStartup, appTaskWait)).start();
+		}
+	}
 
 	public AppTasker(String startupWait, String intervalWait) {
 		try {	
@@ -27,9 +43,7 @@ public class AppTasker extends Thread {
 		}
 	}
 
-	public static boolean verbose() {
-		return System.getProperty("AppTaskerVerbose", "false").equalsIgnoreCase("true");
-	}
+	private EOEditingContext ec = ERXEC.newEditingContext();
 
 	private int startupWait;
 

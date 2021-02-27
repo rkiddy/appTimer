@@ -8,6 +8,12 @@ import com.webobjects.foundation.NSMutableDictionary;
 
 public class U {
 
+	public static final String APP_TASKER_FEATURE_ENABLED = "FeatureRunAppTasks";
+	public static final String APP_TASKER_CHECK_STARTUP_WAIT_SECONDS = "AppTaskerCheckStartupWaitSeconds";
+	public static final String APP_TASKER_CHECK_INTERVAL_SECONDS = "AppTaskerCheckIntervalSeconds";
+	public static final String APP_TASKER_HEARTBEAT_SECONDS = "AppTaskerCheckHeartbeatSeconds";
+	public static final String APP_TASKER_VERBOSE = "AppTaskerVerbose";
+
 	public static final String APP_TASK_INTERVAL_DAILY = "DAILY";
 	public static final String APP_TASK_INTERVAL_HOURLY = "HOURLY";
 	public static final String APP_TASK_INTERVAL_MINUTELY = "MINUTELY";
