@@ -1,3 +1,0 @@
-AppTasks.URL=jdbc:mysql://localhost/app_tasks?serverTimezone=UTC&characterEncoding=utf8
-dbConnectPasswordGLOBAL=alexna11
-dbConnectDriverGLOBAL=com.mysql.cj.jdbc.Driver

@@ -7,6 +7,7 @@ import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.foundation.NSArray;
 
 import er.extensions.eof.ERXKey;
+import er.extensions.eof.ERXQ;
 import er.extensions.eof.ERXKey.Type;
 
 public class AppTask extends _AppTask {
@@ -35,7 +36,7 @@ public class AppTask extends _AppTask {
 		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
 				this.editingContext(),
 				AppTaskInstance.TASK.is(this),
-				AppTaskInstance.END_TIME.descs());
+				AppTaskInstance.START_TIME.descs());
 
 		if (instances.isEmpty()) {
 			return null;
@@ -64,9 +65,12 @@ public class AppTask extends _AppTask {
 			return null;
 		} else {
 
-			long now = System.currentTimeMillis();
-			long then = latestInstance.endTime();
-			long diff = (now - then) / 1000;
+			Long now = System.currentTimeMillis();
+			Long then = latestInstance.endTime();
+			if (then == null) {
+				then = latestInstance.startTime();
+			}
+			Long diff = (now - then) / 1000;
 
 			long seconds = 0;
 			long minutes = 0;
@@ -112,5 +116,39 @@ public class AppTask extends _AppTask {
 		str.append("task: ");
 		str.append(this.taskName());
 		return str.toString();
+	}
+
+	public boolean isQueued() {
+		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				ERXQ.and(
+						AppTaskInstance.TASK.is(this),
+						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.START_TIME.isNull(),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
+		return ! instances.isEmpty();
+	}
+
+	public boolean isRunning() {
+		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				ERXQ.and(
+						AppTaskInstance.TASK.is(this),
+						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.START_TIME.isNotNull(),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
+		return ! instances.isEmpty();
+	}
+
+	public boolean isQuiet() {
+		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				ERXQ.and(
+						AppTaskInstance.TASK.is(this),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
+		return instances.isEmpty();
 	}
 }

@@ -68,7 +68,12 @@ public class AppTasked extends Thread {
 
 		instance.setEndTime(System.currentTimeMillis());
 
-		instance.setResult(0);
+		// TODO Remove this once every process method is setting a zero result itself.
+		// TODO If we got here and result is NULL, we need another error mark with "unknown".
+		//
+		if (instance.result() == null) {
+			instance.setResult(0);
+		}
 
 		ec.saveChanges();
 	}

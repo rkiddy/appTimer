@@ -36,6 +36,8 @@ public class U {
 	public static final String APP_TASK_INTERVAL_PREFIX_MINUTES = "MINUTES_";
 	public static final String APP_TASK_INTERVAL_PREFIX_HOURS = "HOURS_";
 
+    public static final String LAPTOP = "rrk.";
+
 	public static final ThreadLocal<SimpleDateFormat> tdf = new ThreadLocal<SimpleDateFormat>() {
 		@Override
 		protected SimpleDateFormat initialValue() {
@@ -45,16 +47,46 @@ public class U {
 		}
 	};
 
-	public static void log(final Object... words) {
-		String className = (new Throwable()).getStackTrace()[1].getClassName();
-		StringBuilder s = new StringBuilder();
-		s.append(tdf.get().format(new Date()));
-		s.append(" ");
-		s.append(className);
-		s.append(" ");
-		for (Object str : words) {
-			s.append(str);
-		}
-		System.out.println(s.toString());
-	}
+    public static long now() {
+        return System.currentTimeMillis();
+    }
+
+    private static String logStr(final Object... words) {
+        String className = (new Throwable()).getStackTrace()[2].getClassName();
+        StringBuilder s = new StringBuilder();
+        s.append(tdf.get().format(new Date()));
+        s.append(" ");
+        s.append(className);
+        s.append(" ");
+        for (Object str : words) {
+            s.append(str);
+        }
+        return s.toString();
+    }
+
+    public static void log(final Object... words) {
+        String s = logStr(words);
+        System.out.println(s);
+    }
+
+    public static void err(final Object... words) {
+        String s = logStr(words);
+        System.err.println(s);
+    }
+
+    public static boolean isLocal() {
+        java.net.InetAddress localMachine;
+        try {
+            localMachine = java.net.InetAddress.getLocalHost();
+        } catch (java.net.UnknownHostException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Cannot determine local machine name?");
+        }
+        return localMachine != null && localMachine.getHostName() != null
+                && localMachine.getHostName().startsWith(U.LAPTOP);
+    }
+
+    public static boolean isRemote() {
+        return !isLocal();
+    }
 }

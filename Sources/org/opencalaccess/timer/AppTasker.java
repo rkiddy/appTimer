@@ -1,5 +1,6 @@
 package org.opencalaccess.timer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -102,6 +103,77 @@ public class AppTasker extends Thread {
 
 	public static void addTaskForLaunch(AppTask task) {
 		tasksToBeLaunched.putIfAbsent(task.fullName(), task);
+	}
+
+	public static void runTaskNow(AppTask task) {
+
+		U.log("START");
+
+		EOEditingContext ec = ERXEC.newEditingContext();
+
+		AppTask localTask = task.localInstanceIn(ec);
+
+		U.log("launch of task \"", localTask.taskName(), " is requested");
+
+		AppTaskInstance instance = AppTaskInstance.createAppTaskInstance(ec, U.now(), localTask);
+
+		long now = U.now();
+
+		instance.setQueueTime(now);
+		instance.setStartTime(now);
+
+		try {
+			@SuppressWarnings("rawtypes")
+			Class targetClazz = java.lang.Class.forName(localTask.className());
+
+			java.lang.reflect.Method targetMethod = null;
+
+			java.lang.reflect.Method[] methods = targetClazz.getMethods();
+			for (java.lang.reflect.Method method : methods) {
+				if (method.getName().equals(localTask.methodName())) {
+					targetMethod = method;
+				}
+			}
+
+			if (targetMethod == null) {
+				throw new IllegalArgumentException("Class \"" + localTask.className() + "\" does not have method named \"" + localTask.methodName() + "\"");
+			}
+
+			@SuppressWarnings("unchecked")
+			Object targetObj = targetClazz.getDeclaredConstructor().newInstance();
+
+			targetMethod.invoke(targetObj, new Object[]{});
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		instance.setEndTime(System.currentTimeMillis());
+
+		// TODO Remove this once every process method is setting a zero result itself.
+		// TODO If we got here and result is NULL, we need another error mark with "unknown".
+		//
+		if (instance.result() == null) {
+			instance.setResult(0);
+		}
+
+		U.log("saving");
+
+		ec.saveChanges();
+
+		U.log("DONE");
 	}
 
 	private void wait(int seconds) {

@@ -10,6 +10,7 @@ import com.webobjects.foundation.NSArray;
 
 import er.extensions.components.ERXComponent;
 import er.extensions.eof.ERXEC;
+import er.extensions.eof.ERXQ;
 
 public class AppTaskPage extends ERXComponent {
 
@@ -23,13 +24,24 @@ public class AppTaskPage extends ERXComponent {
 
 	public AppTask task;
 
+	public boolean onlyShowNonZero = false;
+
 	public void setTask(AppTask nextFetch) {
 		task = nextFetch.localInstanceIn(ec);
 	}
 
 	public NSArray<AppTaskInstance> instances() {
 		if (task == null) {
-			return AppTaskInstance.fetchAllAppTaskInstances(ec, AppTaskInstance.QUEUE_TIME.descs());
+			if (onlyShowNonZero) {
+				return AppTaskInstance.fetchAppTaskInstances(
+						ec,
+						ERXQ.or(
+								AppTaskInstance.RESULT.isNull(),
+								AppTaskInstance.RESULT.greaterThan(1)),
+						AppTaskInstance.QUEUE_TIME.descs());
+			} else {
+				return AppTaskInstance.fetchAllAppTaskInstances(ec, AppTaskInstance.QUEUE_TIME.descs());
+			}
 		} else {
 			return EOSortOrdering.sortedArrayUsingKeyOrderArray(task.instances(), AppTaskInstance.QUEUE_TIME.descs());
 		}
