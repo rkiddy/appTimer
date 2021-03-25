@@ -13,6 +13,7 @@ import er.extensions.eof.ERXEC;
  * When this finds the method to execute, the method name must be unique. Methods with the same
  * name and different signatures are not allowed.
  *
+ * TODO This should really be a Callable and not a Thread.
  */
 public class AppTasked extends Thread {
 
@@ -21,7 +22,9 @@ public class AppTasked extends Thread {
 	private EOEditingContext ec = ERXEC.newEditingContext();
 
 	public AppTasked(AppTaskInstance instance) {
-		this.instance = instance.localInstanceIn(ec);
+		if ( ! instance.isNewObject()) {
+			this.instance = instance.localInstanceIn(ec);
+		}
 	}
 
 	public void run() {
@@ -67,13 +70,6 @@ public class AppTasked extends Thread {
 		}
 
 		instance.setEndTime(System.currentTimeMillis());
-
-		// TODO Remove this once every process method is setting a zero result itself.
-		// TODO If we got here and result is NULL, we need another error mark with "unknown".
-		//
-		if (instance.result() == null) {
-			instance.setResult(0);
-		}
 
 		ec.saveChanges();
 	}

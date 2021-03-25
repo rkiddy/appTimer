@@ -5,17 +5,18 @@
     <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity = "sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin = "anonymous" />
     <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity = "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin = "anonymous">
     </script>
-    <style>.table-striped { width: auto !important; } 
-                                                            td, th { text-align: center; }
+    <style>.table-striped { width: auto !important; }
+                              td, th { text-align: center; }
     </style>
+    <meta http-equiv = "refresh" content = "30" />
   </head>
   <body>
     <div style = "padding: 25px 25px 25px 25px;">
       <p>
         <wo:link pageName = "AppTaskPage">All Instances</wo:link>
-        &nbsp;-&nbsp; 
+        &nbsp;-&nbsp;
         <wo:ERXDataHyperlink pageName = "AppTaskPage" onlyShowNonZero = "$true">All Non-Zero Instances</wo:ERXDataHyperlink>
-        &nbsp;-&nbsp; 
+        &nbsp;-&nbsp;
         <wo:link pageName = "AppTaskCreatePage">New Task</wo:link>
       </p>
       <table class = "table table-striped">
@@ -27,7 +28,14 @@
             <th>State</th>
             <th>Enable?</th>
             <th>Launch?</th>
-            <th>Last Run</th>
+            <th>
+              <wo:if condition = "$displayingTasksOldestRan">
+                <wo:link action = "$displayTasksSoonestToRun">Last Run</wo:link>
+              </wo:if>
+              <wo:else>
+                <wo:link action = "$displayTasksOldestRan">Next to Run</wo:link>
+              </wo:else>
+            </th>
             <th>Last Runtime</th>
             <th>Last Result</th>
           </tr>
@@ -60,12 +68,14 @@
                 </wo:if>
               </td>
               <td>
-                <wo:if condition = "$isLocalMode">
-                  <wo:link action = "$runTaskNow">run</wo:link>
+                <wo:if condition = "$task.isQuiet">
+                  <wo:link action = "$enqueueTask">push</wo:link>
+                  &nbsp;-&nbsp;
+                  <wo:link action = "$runTask">run</wo:link>
                 </wo:if>
-                <wo:else>
-                  <wo:link action = "$pushTaskLaunch">push</wo:link>
-                </wo:else>
+                <wo:if condition = "$task.isQueued">
+                  <wo:link action = "$dequeueTask">dequeue</wo:link>
+                </wo:if>
               </td>
               <td><wo:str value = "$task.lastInstanceAge" /></td>
               <td>

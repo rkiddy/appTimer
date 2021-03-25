@@ -21,7 +21,23 @@ public class AppTask extends _AppTask {
 	public static final String LATEST_INSTANCE_KEY = LATEST_INSTANCE.key();
 
 	public static NSArray<AppTaskInstance> allRunningInstances(EOEditingContext ec) {
-		return AppTaskInstance.fetchAppTaskInstances(ec, AppTaskInstance.END_TIME.isNull(), null);
+		return AppTaskInstance.fetchAppTaskInstances(
+				ec,
+				ERXQ.and(
+						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.START_TIME.isNotNull(),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
+	}
+
+	public static NSArray<AppTaskInstance> allQueuedInstances(EOEditingContext ec) {
+		return AppTaskInstance.fetchAppTaskInstances(
+				ec,
+				ERXQ.and(
+						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.START_TIME.isNull(),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
 	}
 
 	public NSArray<AppTaskInstance> runningInstances() {
@@ -68,7 +84,7 @@ public class AppTask extends _AppTask {
 			Long now = System.currentTimeMillis();
 			Long then = latestInstance.endTime();
 			if (then == null) {
-				then = latestInstance.startTime();
+				return null;
 			}
 			Long diff = (now - then) / 1000;
 
