@@ -44,6 +44,14 @@ public class AppTasksPage extends ERXComponent {
         super(context);
     }
 
+	public boolean userCanRead() {
+		return true;
+	}
+
+	public boolean userCanWrite() {
+		return (boolean)session().valueForKey("userCanWrite");
+	}
+
 	EOEditingContext ec = ERXEC.newEditingContext();
 
 	public String digest;
@@ -51,7 +59,7 @@ public class AppTasksPage extends ERXComponent {
 	public void setDigest(String digest) {
 
 		if (digest == null) {
-			throw new IllegalArgumentException("No digest included in request");
+			return;
 		}
 
 		this.digest = digest;
