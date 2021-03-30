@@ -73,6 +73,46 @@ public class AppTask extends _AppTask {
 		return str.toString();
 	}
 
+	public String duration(long diff) {
+
+		long seconds = 0;
+		long minutes = 0;
+		long hours = 0;
+		long days = 0;
+
+		seconds = diff % 60;
+		diff = diff / 60;
+
+		minutes = diff % 60;
+		diff = diff / 60;
+
+		hours = diff % 24;
+		diff = diff / 24;
+
+		days = diff;
+
+		StringBuilder str = new StringBuilder();
+
+		if (days > 0) {
+			str.append(days);
+			str.append("d ");
+		}
+		if (hours > 0) {
+			str.append(hours);
+			str.append("h ");
+		}
+		if (minutes > 0) {
+			str.append(minutes);
+			str.append("m ");
+		}
+		if (seconds > 0) {
+			str.append(seconds);
+			str.append("s");
+		}
+
+		return str.toString();
+	}
+
 	public String lastInstanceAge() {
 
 		AppTaskInstance latestInstance = this.latestInstance();
@@ -88,42 +128,26 @@ public class AppTask extends _AppTask {
 			}
 			Long diff = (now - then) / 1000;
 
-			long seconds = 0;
-			long minutes = 0;
-			long hours = 0;
-			long days = 0;
+			return duration(diff);
+		}
+	}
 
-			seconds = diff % 60;
-			diff = diff / 60;
+	public String runningInstanceAge() {
 
-			minutes = diff % 60;
-			diff = diff / 60;
+		AppTaskInstance latestInstance = this.latestInstance();
 
-			hours = diff % 24;
-			diff = diff / 24;
+		if (latestInstance == null) {
+			return null;
+		} else {
 
-			days = diff;
-
-			StringBuilder str = new StringBuilder();
-
-			if (days > 0) {
-				str.append(days);
-				str.append("d ");
+			Long now = System.currentTimeMillis();
+			Long then = latestInstance.startTime();
+			if (then == null) {
+				return null;
 			}
-			if (hours > 0) {
-				str.append(hours);
-				str.append("h ");
-			}
-			if (minutes > 0) {
-				str.append(minutes);
-				str.append("m ");
-			}
-			if (seconds > 0) {
-				str.append(seconds);
-				str.append("s");
-			}
+			Long diff = (now - then) / 1000;
 
-			return str.toString();
+			return duration(diff);
 		}
 	}
 
