@@ -71,6 +71,9 @@ public class AppTasksPage extends ERXComponent {
 				eo.valueForKeyPath("userRight.appRight").equals("WRITE_DATA")) {
 
 			U.log("found INVITE for app: ", appName, ", digest: ", digest);
+
+			session().takeValueForKey(eo, "authenticatedInvite");
+
 		} else {
 			System.err.println("found NO invite for app: " + appName + ", digest: " + digest);
 			throw new IllegalArgumentException("No authenticated user for digest = \"" + digest + "\"");
@@ -266,7 +269,23 @@ public class AppTasksPage extends ERXComponent {
 
 	public WOActionResults abortTask() {
 
-		U.log("Aborting task is not supported at this time.");
+		AppTaskInstance queued = AppTaskInstance.fetchRequiredAppTaskInstance(
+				ec,
+				ERXQ.and(
+						AppTaskInstance.TASK.is(task),
+						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.START_TIME.isNotNull(),
+						AppTaskInstance.END_TIME.isNull()));
+
+		long now = U.now();
+
+		queued.setEndTime(now);
+		queued.setResult(2);
+		queued.setNote("aborted");
+
+		ec.saveChanges();
+
+		U.log("task \"", task.appName(), ":", task.taskName(), " is ABORTED and is stopped");
 
 		return this.context().page();
 	}
