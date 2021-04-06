@@ -20,6 +20,7 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
 
   // Attribute Keys
   public static final ERXKey<Long> END_TIME = new ERXKey<Long>("endTime", Type.Attribute);
+  public static final ERXKey<Long> EXEC_TIME = new ERXKey<Long>("execTime", Type.Attribute);
   public static final ERXKey<String> NOTE = new ERXKey<String>("note", Type.Attribute);
   public static final ERXKey<Long> QUEUE_TIME = new ERXKey<Long>("queueTime", Type.Attribute);
   public static final ERXKey<Integer> RESULT = new ERXKey<Integer>("result", Type.Attribute);
@@ -30,6 +31,7 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
 
   // Attributes
   public static final String END_TIME_KEY = END_TIME.key();
+  public static final String EXEC_TIME_KEY = EXEC_TIME.key();
   public static final String NOTE_KEY = NOTE.key();
   public static final String QUEUE_TIME_KEY = QUEUE_TIME.key();
   public static final String RESULT_KEY = RESULT.key();
@@ -55,6 +57,15 @@ public abstract class _AppTaskInstance extends  ERXGenericRecord {
   public void setEndTime(Long value) {
     log.debug( "updating endTime from {} to {}", endTime(), value);
     takeStoredValueForKey(value, _AppTaskInstance.END_TIME_KEY);
+  }
+
+  public Long execTime() {
+    return (Long) storedValueForKey(_AppTaskInstance.EXEC_TIME_KEY);
+  }
+
+  public void setExecTime(Long value) {
+    log.debug( "updating execTime from {} to {}", execTime(), value);
+    takeStoredValueForKey(value, _AppTaskInstance.EXEC_TIME_KEY);
   }
 
   public String note() {

@@ -22,9 +22,7 @@ public class AppTasked extends Thread {
 	private EOEditingContext ec = ERXEC.newEditingContext();
 
 	public AppTasked(AppTaskInstance instance) {
-		if ( ! instance.isNewObject()) {
-			this.instance = instance.localInstanceIn(ec);
-		}
+		this.instance = instance;
 	}
 
 	public void run() {

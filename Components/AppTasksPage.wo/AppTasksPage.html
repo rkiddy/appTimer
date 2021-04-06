@@ -89,8 +89,8 @@
                 </wo:if>
                 <td><wo:str value = "$task.lastInstanceAge" /></td>
                 <td>
-                  <wo:str value = "$task.latestInstance.runtime" numberformat = "0" />
-                  <wo:if condition = "$task.latestInstance.runtime">&nbsp;s</wo:if>
+                  <wo:str value = "$task.latestInstance.runDuration" numberformat = "0" />
+                  <wo:if condition = "$task.latestInstance.runDuration">&nbsp;s</wo:if>
                   <wo:if condition="$task.isRunning"><wo:str value="$task.runningInstanceAge" /></wo:if>
                 </td>
                 <td><wo:str value = "$task.latestInstance.result" numberformat = "0" /></td>

@@ -7,6 +7,13 @@
             name = endTime; 
             prototypeName = longNumber; 
         }, 
+        {
+            allowsNull = Y; 
+            columnName = "exec_time"; 
+            externalType = BIGINT; 
+            name = execTime; 
+            prototypeName = longNumber; 
+        }, 
         {allowsNull = Y; columnName = note; name = note; prototypeName = longText; }, 
         {allowsNull = N; columnName = pk; name = pk; prototypeName = id; }, 
         {
@@ -32,7 +39,7 @@
     ); 
     attributesUsedForLocking = (pk, taskPk); 
     className = "org.opencalaccess.timer.eo.AppTaskInstance"; 
-    classProperties = (endTime, note, queueTime, result, startTime, task); 
+    classProperties = (endTime, execTime, note, queueTime, result, startTime, task); 
     externalName = "app_task_instances"; 
     fetchSpecificationDictionary = {}; 
     name = AppTaskInstance; 

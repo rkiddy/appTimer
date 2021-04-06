@@ -40,7 +40,22 @@ public class AppScheduler extends Thread {
 
 			for (AppTask task : tasks) {
 
-				if (task.isQueued() || task.isRunning()) {
+				if (task.isQueued()) {
+					if (AppTimer.verbose()) {
+						U.log("Task \"", task.taskName(), "\" already queued, NOT adding to queue.");
+					}
+					continue;
+				}
+
+				if (task.isRunning()) {
+					if (AppTimer.verbose()) {
+						U.log("Task \"", task.taskName(), "\" already running, NOT adding to queue.");
+					}
+					continue;
+				}
+
+				if (task.isBouncing()) {
+					U.log("Task \"", task.taskName(), "\" is BOUNCING, NOT adding to queue.");
 					continue;
 				}
 
@@ -127,13 +142,12 @@ public class AppScheduler extends Thread {
 
 					int hours = Integer.valueOf(task.intervalName().substring(U.APP_TASK_INTERVAL_PREFIX_HOURS.length()));
 
-					int interval = hours * (int) U.one_hour;
+					long interval = task.intervalDuration(task.intervalName());
 
 					long now = System.currentTimeMillis();
 					long then = lastRun.endTime();
 
 					long diff = now - then;
-
 				
 					if (diff > interval) {
 

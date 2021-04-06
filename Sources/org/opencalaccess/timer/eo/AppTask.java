@@ -1,5 +1,6 @@
 package org.opencalaccess.timer.eo;
 
+import org.opencalaccess.timer.U;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,8 +8,8 @@ import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.foundation.NSArray;
 
 import er.extensions.eof.ERXKey;
-import er.extensions.eof.ERXQ;
 import er.extensions.eof.ERXKey.Type;
+import er.extensions.eof.ERXQ;
 
 public class AppTask extends _AppTask {
 
@@ -151,6 +152,29 @@ public class AppTask extends _AppTask {
 		}
 	}
 
+	public long intervalDuration(String name) {
+
+		if (U.intervalTimes.containsKey(name)) {
+			return U.intervalTimes.get(name);
+		}
+
+		if (this.intervalName().startsWith(U.APP_TASK_INTERVAL_PREFIX_MINUTES)) {
+
+			long minutes = Long.valueOf(this.intervalName().substring(U.APP_TASK_INTERVAL_PREFIX_MINUTES.length()));
+
+			return minutes * (int) U.one_minute;
+		}
+
+		if (this.intervalName().startsWith(U.APP_TASK_INTERVAL_PREFIX_HOURS)) {
+
+			long hours = Long.valueOf(this.intervalName().substring(U.APP_TASK_INTERVAL_PREFIX_HOURS.length()));
+
+			return hours * (int) U.one_hour;
+		}
+
+		throw new IllegalArgumentException("Cannot calculate interval length for unknown interval with name: \"" + this.intervalName() + "\"");
+	}
+
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		str.append("task: ");
@@ -164,6 +188,20 @@ public class AppTask extends _AppTask {
 				ERXQ.and(
 						AppTaskInstance.TASK.is(this),
 						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.EXEC_TIME.isNull(),
+						AppTaskInstance.START_TIME.isNull(),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
+		return ! instances.isEmpty();
+	}
+
+	public boolean isExeced() {
+		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				ERXQ.and(
+						AppTaskInstance.TASK.is(this),
+						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.EXEC_TIME.isNotNull(),
 						AppTaskInstance.START_TIME.isNull(),
 						AppTaskInstance.END_TIME.isNull()),
 				null);
@@ -176,6 +214,7 @@ public class AppTask extends _AppTask {
 				ERXQ.and(
 						AppTaskInstance.TASK.is(this),
 						AppTaskInstance.QUEUE_TIME.isNotNull(),
+						AppTaskInstance.EXEC_TIME.isNull(),
 						AppTaskInstance.START_TIME.isNotNull(),
 						AppTaskInstance.END_TIME.isNull()),
 				null);
@@ -190,5 +229,19 @@ public class AppTask extends _AppTask {
 						AppTaskInstance.END_TIME.isNull()),
 				null);
 		return instances.isEmpty();
+	}
+
+	public boolean isBouncing() {
+
+		long oldest = U.now() - intervalDuration(this.intervalName());
+
+		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				ERXQ.and(
+						AppTaskInstance.TASK.is(this),
+						AppTaskInstance.END_TIME.greaterThan(oldest)),
+				null);
+
+		return instances.size() > 3;
 	}
 }

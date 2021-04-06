@@ -8,10 +8,10 @@ import com.webobjects.foundation.NSMutableDictionary;
 
 public class U {
 
-    public static final String APP_TASKER_FEATURE_ENABLED = "FeatureRunAppTasks";
+    public static final String APP_TASKER_FEATURE_ENABLED = "AppTaskerRunTasks";
     public static final String APP_TASKER_CHECK_STARTUP_WAIT_SECONDS = "AppTaskerCheckStartupWaitSeconds";
     public static final String APP_TASKER_CHECK_INTERVAL_SECONDS = "AppTaskerCheckIntervalSeconds";
-    public static final String APP_TASKER_DATABASE_INTERVAL_SECONDS = "AppTaskerDatabaseIntervalSeconds";
+    public static final String APP_TASKER_HEARTBEAT_SECONDS = "AppTaskerCheckHeartbeatSeconds";
     public static final String APP_TASKER_VERBOSE = "AppTaskerVerbose";
 
     // For testing, going all the way through schedule, but do not submit to executor.

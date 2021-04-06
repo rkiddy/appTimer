@@ -1,6 +1,5 @@
 package org.opencalaccess.timer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +29,6 @@ public class AppTasker extends Thread {
 
 		String appTaskStartup =   System.getProperty(U.APP_TASKER_CHECK_STARTUP_WAIT_SECONDS, "30");
 		String appTaskWait =      System.getProperty(U.APP_TASKER_CHECK_INTERVAL_SECONDS, "60");
-		String appDatabseWait =   System.getProperty(U.APP_TASKER_DATABASE_INTERVAL_SECONDS, "60");
 
 		U.log(U.APP_TASKER_FEATURE_ENABLED, " = ", runAppTasks);
 
@@ -38,7 +36,7 @@ public class AppTasker extends Thread {
 
 			(new AppTasker(appTaskStartup, appTaskWait)).start();
 
-			(new AppScheduler(appDatabseWait)).start();
+			(new AppScheduler("60")).start();
 		}
 	}
 
@@ -96,25 +94,26 @@ public class AppTasker extends Thread {
 									AppTaskInstance.TASK.is(task),
 									AppTaskInstance.QUEUE_TIME.isNotNull(),
 									AppTaskInstance.START_TIME.isNull(),
+									AppTaskInstance.EXEC_TIME.isNull(),
 									AppTaskInstance.END_TIME.isNull()));
 
 					ec.saveChanges();
 
 					AppTasked tasked = new AppTasked(instance);
 
+					long now = U.now();
+
 					if (abortLaunch) {
-
-						long now = U.now();
-
 						instance.setStartTime(now);
 						instance.setEndTime(now);
 						instance.setResult(0);
 						instance.setNote("aborted/testing");
-						ec.saveChanges();
 
 					} else {
 						exec.submit(tasked);
+						instance.setExecTime(now);
 					}
+					ec.saveChanges();
 				}
 			}
 
@@ -139,89 +138,19 @@ public class AppTasker extends Thread {
 
 		U.log("launch of task \"", localTask.taskName(), " is demanded to start now.");
 
-		long now = U.now();
-
-		AppTaskInstance instance = AppTaskInstance.createAppTaskInstance(ec, now, localTask);
-
-		ec.saveChanges();
+		AppTaskInstance instance = AppTaskInstance.createAppTaskInstance(ec, U.now(), localTask);
 
 		AppTasked tasked = new AppTasked(instance);
 
-		tasked.run();
-	}
-
-	/**
-	 * Run the task manually, now, without waiting for the task loop.
-	 */
-	public static void XXX_runTaskNow(AppTask task) {
-
-		U.log("START");
-
-		EOEditingContext ec = ERXEC.newEditingContext();
-
-		AppTask localTask = task.localInstanceIn(ec);
-
-		U.log("launch of task \"", localTask.taskName(), " is demanded to start now.");
-
-		AppTaskInstance instance = AppTaskInstance.createAppTaskInstance(ec, U.now(), localTask);
-
-		long now = U.now();
-
-		instance.setQueueTime(now);
-		instance.setStartTime(now);
-
-		try {
-			@SuppressWarnings("rawtypes")
-			Class targetClazz = java.lang.Class.forName(localTask.className());
-
-			java.lang.reflect.Method targetMethod = null;
-
-			java.lang.reflect.Method[] methods = targetClazz.getMethods();
-			for (java.lang.reflect.Method method : methods) {
-				if (method.getName().equals(localTask.methodName())) {
-					targetMethod = method;
-				}
-			}
-
-			if (targetMethod == null) {
-				throw new IllegalArgumentException("Class \"" + localTask.className() + "\" does not have method named \"" + localTask.methodName() + "\"");
-			}
-
-			@SuppressWarnings("unchecked")
-			Object targetObj = targetClazz.getDeclaredConstructor().newInstance();
-
-			targetMethod.invoke(targetObj, new Object[]{});
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-
-		instance.setEndTime(System.currentTimeMillis());
-
-		// TODO Remove this once every process method is setting a zero result itself.
-		// TODO If we got here and result is NULL, we need another error mark with "unknown".
-		//
-		if (instance.result() == null) {
-			instance.setResult(0);
-		}
-
-		U.log("saving");
+		instance.setStartTime(U.now());
 
 		ec.saveChanges();
 
-		U.log("DONE");
+		tasked.run();
+
+		instance.setEndTime(U.now());
+
+		ec.saveChanges();
 	}
 
 	private void wait(int seconds) {

@@ -14,11 +14,19 @@ public class AppTaskInstance extends _AppTaskInstance {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(AppTaskInstance.class);
 
-	public Long runtime() {
-		if (this.endTime() == null || this.startTime() == null) {
+	public NSTimestamp queueDate() {
+		if (this.queueTime() == null) {
 			return null;
 		} else {
-			return (this.endTime() - this.startTime()) / 1000;
+			return new NSTimestamp(new Date(this.queueTime()));
+		}
+	}
+
+	public NSTimestamp execDate() {
+		if (this.execTime() == null) {
+			return null;
+		} else {
+			return new NSTimestamp(new Date(this.execTime()));
 		}
 	}
 
@@ -38,11 +46,12 @@ public class AppTaskInstance extends _AppTaskInstance {
 		}
 	}
 
-	public NSTimestamp queueDate() {
-		if (this.queueTime() == null) {
+	public Long runDuration() {
+		if (this.endTime() == null || this.startTime() == null) {
 			return null;
 		} else {
-			return new NSTimestamp(new Date(this.queueTime()));
+			return (this.endTime() - this.startTime()) / 1000;
 		}
 	}
+
 }
