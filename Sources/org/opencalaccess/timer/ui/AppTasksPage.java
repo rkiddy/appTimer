@@ -1,5 +1,7 @@
 package org.opencalaccess.timer.ui;
 
+import java.util.Map;
+
 import org.opencalaccess.timer.AppTasker;
 import org.opencalaccess.timer.U;
 import org.opencalaccess.timer.eo.AppTask;
@@ -13,10 +15,10 @@ import com.webobjects.eocontrol.EOEnterpriseObject;
 import com.webobjects.eocontrol.EOSortOrdering;
 import com.webobjects.foundation.NSArray;
 import com.webobjects.foundation.NSMutableArray;
+import com.webobjects.foundation.NSMutableSet;
 
 import er.extensions.components.ERXComponent;
 import er.extensions.eof.ERXEC;
-import er.extensions.eof.ERXQ;
 
 /**
  * This page manages the AppTask via the AppTaskInstance objects that it puts
@@ -118,6 +120,11 @@ public class AppTasksPage extends ERXComponent {
 
 			if (nextTask.latestInstance() == null) {
 				others.add(nextTask);
+				continue;
+			}
+
+			if (nextTask.isExeced()) {
+				queued.add(nextTask);
 				continue;
 			}
 
@@ -238,20 +245,7 @@ public class AppTasksPage extends ERXComponent {
 
 	public WOActionResults dequeueTask() {
 
-		AppTaskInstance queued = AppTaskInstance.fetchRequiredAppTaskInstance(
-				ec,
-				ERXQ.and(
-						AppTaskInstance.TASK.is(task),
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.START_TIME.isNull(),
-						AppTaskInstance.END_TIME.isNull()));
-
-		long now = U.now();
-
-		queued.setStartTime(now);
-		queued.setEndTime(now);
-		queued.setResult(0);
-		queued.setNote("dequeued, NOT run");
+		task.setToQuiet(0, "dequeued, NOT run");
 
 		ec.saveChanges();
 
@@ -269,47 +263,13 @@ public class AppTasksPage extends ERXComponent {
 
 	public WOActionResults abortTask() {
 
-		AppTaskInstance queued = AppTaskInstance.fetchRequiredAppTaskInstance(
-				ec,
-				ERXQ.and(
-						AppTaskInstance.TASK.is(task),
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.START_TIME.isNotNull(),
-						AppTaskInstance.END_TIME.isNull()));
-
-		long now = U.now();
-
-		queued.setEndTime(now);
-		queued.setResult(2);
-		queued.setNote("aborted");
+		task.setToQuiet(2, "aborted");
 
 		ec.saveChanges();
 
 		U.log("task \"", task.appName(), ":", task.taskName(), " is ABORTED and is stopped");
 
 		return this.context().page();
-	}
-
-	/**
-	 * The task is active, but we only want to know that if it is not queued or running right now.
-	 *
-	 * Used to determine display color on task in page.
-	 */
-	public boolean taskIsActive() {
-		boolean quiet = task.isQuiet();
-		boolean active = task.active() == 1;
-		return quiet && active;
-	}
-
-	/**
-	 * The task is inactive, but we only want to know that if it is not queued or running right now.
-	 *
-	 * Used to determine display color on task in page.
-	 */
-	public boolean taskIsInactive() {
-		boolean quiet = task.isQuiet();
-		boolean active = task.active() == 1;
-		return quiet && ! active;
 	}
 
 	public boolean taskIsQueued() {
@@ -343,4 +303,25 @@ public class AppTasksPage extends ERXComponent {
 
 		return found;
 	}
+
+	public NSArray<String> taskThreads() {
+
+		NSArray<String> taskClasses = AppTask.fetchAllActiveTasks(ec).valueForKey(AppTask.CLASS_NAME);
+
+		Map<Thread,StackTraceElement[]> threads = Thread.getAllStackTraces();
+
+		NSMutableSet<String> found = new NSMutableSet<>();
+
+		for (Thread thread : threads.keySet()) {
+			for (StackTraceElement elt : threads.get(thread)) {
+				if (taskClasses.contains(elt.getClassName())) {
+					found.add(elt.getClassName());
+				}
+			}
+		}
+
+		return new NSArray<String>(found);
+	}
+
+	public String taskThread;
 }

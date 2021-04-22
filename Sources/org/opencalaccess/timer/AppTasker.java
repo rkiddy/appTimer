@@ -1,5 +1,6 @@
 package org.opencalaccess.timer;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,7 +11,6 @@ import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.foundation.NSArray;
 
 import er.extensions.eof.ERXEC;
-import er.extensions.eof.ERXQ;
 
 /**
  * The run() method here is the main loop for the tasking process.
@@ -21,7 +21,10 @@ public class AppTasker extends Thread {
 	@SuppressWarnings("unused")
 	private boolean verbose = System.getProperty(U.APP_TASKER_VERBOSE, "false").equalsIgnoreCase("true");
 
-	private boolean abortLaunch = System.getProperty(U.APP_TASKER_ABORT_LAUNCH, "false").equalsIgnoreCase("true");
+	File abortMarker = new File(System.getProperty(U.APP_TASKER_ABORT_FILE, "/tmp/abortDJ"));
+
+	private boolean abortLaunchProp = System.getProperty(U.APP_TASKER_ABORT_LAUNCH, "false").equalsIgnoreCase("true");
+	private boolean abortLaunchMark = abortMarker.exists();
 
 	public static void initialize() {
 
@@ -86,24 +89,18 @@ public class AppTasker extends Thread {
 
 				if (task.isQueued()) {
 
-					U.log("launch of task \"", task.taskName(), " is scheduled to start now.");
+					U.log("launch of task ", task.taskName(), " is scheduled to start now.");
 
-					AppTaskInstance instance = AppTaskInstance.fetchRequiredAppTaskInstance(
-							ec,
-							ERXQ.and(
-									AppTaskInstance.TASK.is(task),
-									AppTaskInstance.QUEUE_TIME.isNotNull(),
-									AppTaskInstance.START_TIME.isNull(),
-									AppTaskInstance.EXEC_TIME.isNull(),
-									AppTaskInstance.END_TIME.isNull()));
-
-					ec.saveChanges();
+					AppTaskInstance instance = task.latestInstance();
 
 					AppTasked tasked = new AppTasked(instance);
 
 					long now = U.now();
 
-					if (abortLaunch) {
+					if (abortLaunchProp) { U.log("aborting run via Property"); }
+					if (abortLaunchMark) { U.log("aborting run via marker file ", abortMarker.getPath()); }
+
+					if (abortLaunchProp || abortLaunchMark) {
 						instance.setStartTime(now);
 						instance.setEndTime(now);
 						instance.setResult(0);
@@ -136,13 +133,15 @@ public class AppTasker extends Thread {
 
 		AppTask localTask = task.localInstanceIn(ec);
 
-		U.log("launch of task \"", localTask.taskName(), " is demanded to start now.");
+		U.log("launch of task ", localTask.taskName(), " is demanded to start now.");
 
-		AppTaskInstance instance = AppTaskInstance.createAppTaskInstance(ec, U.now(), localTask);
+		long now = U.now();
+
+		AppTaskInstance instance = AppTaskInstance.createAppTaskInstance(ec, now, localTask);
 
 		AppTasked tasked = new AppTasked(instance);
 
-		instance.setStartTime(U.now());
+		instance.setExecTime(now);
 
 		ec.saveChanges();
 

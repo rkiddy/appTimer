@@ -11,6 +11,26 @@ import er.extensions.eof.ERXKey;
 import er.extensions.eof.ERXKey.Type;
 import er.extensions.eof.ERXQ;
 
+/**
+ * An AppTask needs to exist in one of the following states.
+ * <ol>
+ *   <li>Quiet</li>
+ *   <li>Queued</li>
+ *   <li>Execed</li>
+ *   <li>Running</li>
+ * </ol>
+ *
+ * These states correspond to a AppTaskInstance with certain settings.
+ * <ol>
+ *   <li>Quiet - no AppTaskInstance with endTime == NULL exists.</li>
+ *   <li>Queued - queuedTime is not NULL and execTime, startTime, and endTime are all NULL.</li>
+ *   <li>Execed - queuedTime and execTime are not NULL and startTime and endTime are all NULL. </li>
+ *   <li>Running - queuedTime, execTime, and startTime are not NULL and endTime is NULL.</li>
+ * </ol>
+ *
+ * If an AppTask is not in a Quiet state, then there be only one AppTaskInstance that has a endTime == NULL.
+ *
+ */
 public class AppTask extends _AppTask {
 
 	private static final long serialVersionUID = -5769773713087584279L;
@@ -21,34 +41,33 @@ public class AppTask extends _AppTask {
 	public static final ERXKey<AppTaskInstance> LATEST_INSTANCE = new ERXKey<AppTaskInstance>("latestInstance", Type.Attribute);
 	public static final String LATEST_INSTANCE_KEY = LATEST_INSTANCE.key();
 
-	public static NSArray<AppTaskInstance> allRunningInstances(EOEditingContext ec) {
-		return AppTaskInstance.fetchAppTaskInstances(
-				ec,
-				ERXQ.and(
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.START_TIME.isNotNull(),
-						AppTaskInstance.END_TIME.isNull()),
-				null);
-	}
+    public static NSArray<AppTask> fetchAllActiveTasks(EOEditingContext ec) {
+    	return AppTask.fetchAppTasks(
+    			ec,
+    			AppTask.ACTIVE.is(1),
+    			null);
+    }
 
-	public static NSArray<AppTaskInstance> allQueuedInstances(EOEditingContext ec) {
-		return AppTaskInstance.fetchAppTaskInstances(
-				ec,
-				ERXQ.and(
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.START_TIME.isNull(),
-						AppTaskInstance.END_TIME.isNull()),
-				null);
-	}
-
-	public NSArray<AppTaskInstance> runningInstances() {
-		return AppTaskInstance.fetchAppTaskInstances(
-				this.editingContext(),
-				AppTaskInstance.TASK.is(this).and(AppTaskInstance.END_TIME.isNull()),
-				null);
-	}
+	public static final String TASK_STATE_QUIET = "Quiet";
+	public static final String TASK_STATE_QUEUED = "Queued";
+	public static final String TASK_STATE_EXECED = "Execed";
+	public static final String TASK_STATE_RUNNING = "Running";
 
 	public AppTaskInstance latestInstance() {
+
+		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				AppTaskInstance.TASK.is(this),
+				AppTaskInstance.QUEUE_TIME.descs());
+
+		if (instances.isEmpty()) {
+			return null;
+		} else {
+			return instances.get(0);
+		}
+	}
+
+	public AppTaskInstance latestSuccessfulInstance() {
 
 		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
 				this.editingContext(),
@@ -58,13 +77,14 @@ public class AppTask extends _AppTask {
 		if (instances.isEmpty()) {
 			return null;
 		} else {
-			return instances.get(0);
+			for (AppTaskInstance instance : instances) {
+				if (instance.result() != null && instance.result() == 0) {
+					return instance;
+				}
+			}
+			return null;
 		}
 	}
-
-	public boolean enabled() { return this.active() == 1; }
-
-	public boolean disabled() { return ! this.enabled(); }
 
 	public String fullName() {
 		StringBuilder str = new StringBuilder();
@@ -73,6 +93,10 @@ public class AppTask extends _AppTask {
 		str.append(this.taskName());
 		return str.toString();
 	}
+
+	public boolean enabled() { return this.active() == 1; }
+
+	public boolean disabled() { return ! this.enabled(); }
 
 	public String duration(long diff) {
 
@@ -183,65 +207,123 @@ public class AppTask extends _AppTask {
 	}
 
 	public boolean isQueued() {
-		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
-				this.editingContext(),
-				ERXQ.and(
-						AppTaskInstance.TASK.is(this),
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.EXEC_TIME.isNull(),
-						AppTaskInstance.START_TIME.isNull(),
-						AppTaskInstance.END_TIME.isNull()),
-				null);
-		return ! instances.isEmpty();
+		AppTaskInstance latest = latestInstance();
+		return latest != null &&
+				latest.queueTime() != null &&
+				latest.execTime() == null &&
+				latest.startTime() == null &&
+				latest.endTime() == null;
+	}
+
+	public void setToQueued() {
+		confirmValid();
+		if (this.isQuiet()) {
+			AppTaskInstance.createAppTaskInstance(this.editingContext(), U.now(), this);
+		} else {
+			throw new IllegalArgumentException("Cannot set to Queued unless the task is Quiet.");
+		}
 	}
 
 	public boolean isExeced() {
-		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
-				this.editingContext(),
-				ERXQ.and(
-						AppTaskInstance.TASK.is(this),
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.EXEC_TIME.isNotNull(),
-						AppTaskInstance.START_TIME.isNull(),
-						AppTaskInstance.END_TIME.isNull()),
-				null);
-		return ! instances.isEmpty();
+		AppTaskInstance latest = latestInstance();
+		return latest != null &&
+				latest.queueTime() != null &&
+				latest.execTime() != null &&
+				latest.startTime() == null &&
+				latest.endTime() == null;
+	}
+
+	public void setToExeced() {
+		confirmValid();
+		if (this.isQueued()) {
+			latestInstance().setExecTime(U.now());
+		} else {
+			throw new IllegalArgumentException("Cannot set to Running unless the task is Queued.");
+		}
 	}
 
 	public boolean isRunning() {
-		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
-				this.editingContext(),
-				ERXQ.and(
-						AppTaskInstance.TASK.is(this),
-						AppTaskInstance.QUEUE_TIME.isNotNull(),
-						AppTaskInstance.EXEC_TIME.isNull(),
-						AppTaskInstance.START_TIME.isNotNull(),
-						AppTaskInstance.END_TIME.isNull()),
-				null);
-		return ! instances.isEmpty();
+		AppTaskInstance latest = latestInstance();
+		return latest != null &&
+				latest.queueTime() != null &&
+				latest.execTime() != null &&
+				latest.startTime() != null &&
+				latest.endTime() == null;
+	}
+
+	public void setToRunning() {
+		confirmValid();
+		if (this.isExeced()) {
+			latestInstance().setStartTime(U.now());
+		} else {
+			throw new IllegalArgumentException("Cannot set to Running unless the task is Execed.");
+		}
 	}
 
 	public boolean isQuiet() {
-		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
-				this.editingContext(),
-				ERXQ.and(
-						AppTaskInstance.TASK.is(this),
-						AppTaskInstance.END_TIME.isNull()),
-				null);
-		return instances.isEmpty();
+		AppTaskInstance latest = latestInstance();
+		return latest == null || latest.endTime() != null;
+	}
+
+	public void setToQuiet(int result, String note) {
+		confirmValid();
+		if ( ! this.isQuiet()) {
+			AppTaskInstance instance = latestInstance();
+			instance.setEndTime(U.now());
+			instance.setResult(result);
+			instance.setNote(note);
+		} else {
+			throw new IllegalArgumentException("Cannot set to Quiet unless the task is not Quiet.");
+		}
 	}
 
 	public boolean isBouncing() {
 
-		long oldest = U.now() - intervalDuration(this.intervalName());
+		long intervalLength = U.now() - intervalDuration(this.intervalName());
 
 		NSArray<AppTaskInstance> instances = AppTaskInstance.fetchAppTaskInstances(
 				this.editingContext(),
 				ERXQ.and(
 						AppTaskInstance.TASK.is(this),
-						AppTaskInstance.END_TIME.greaterThan(oldest)),
+						AppTaskInstance.END_TIME.greaterThan(intervalLength)),
 				null);
 
 		return instances.size() > 3;
+	}
+
+	private void confirmValid() {
+		if ( ! isValid()) {
+			throw new IllegalArgumentException("task \"" + this.taskName() + "\" is NOT in valid state.");
+		}
+	}
+
+	public boolean isValid() {
+		NSArray<AppTaskInstance> found = AppTaskInstance.fetchAppTaskInstances(
+				this.editingContext(),
+				ERXQ.and(
+						AppTaskInstance.TASK.is(this),
+						AppTaskInstance.END_TIME.isNull()),
+				null);
+		return found.size() < 2;
+	}
+
+	public String state() {
+		if (this.isValid()) {
+			if (this.isQuiet()) {
+				return TASK_STATE_QUIET;
+			}
+			if (this.isQueued()) {
+				return TASK_STATE_QUEUED;
+			}
+			if (this.isExeced()) {
+				return TASK_STATE_EXECED;
+			}
+			if (this.isRunning()) {
+				return TASK_STATE_RUNNING;
+			}
+		} else {
+			return null;
+		}
+		return "UNKNOWN";
 	}
 }

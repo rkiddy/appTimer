@@ -8,8 +8,11 @@ import com.webobjects.foundation.NSArray;
 import com.webobjects.foundation.NSMutableArray;
 
 import er.extensions.eof.ERXEC;
-import er.extensions.eof.ERXQ;
 
+/**
+ * Check for the last successful run of a task and, if it has been longer ago than is desired and
+ * other conditions are met, put the task instance on the queue.
+ */
 public class AppScheduler extends Thread {
 
 	private int databaseWait;
@@ -36,48 +39,36 @@ public class AppScheduler extends Thread {
 
 			NSMutableArray<String> runnables = new NSMutableArray<>();
 
-			NSArray<AppTask> tasks = AppTask.fetchAppTasks(ec, AppTask.ACTIVE.is(1), null);
+			NSArray<AppTask> tasks = AppTask.fetchAllActiveTasks(ec);
 
 			for (AppTask task : tasks) {
 
-				if (task.isQueued()) {
+				// if take is not quiet, then skip this one.
+				//
+				if ( ! task.isQuiet()) {
 					if (AppTimer.verbose()) {
-						U.log("Task \"", task.taskName(), "\" already queued, NOT adding to queue.");
-					}
-					continue;
-				}
-
-				if (task.isRunning()) {
-					if (AppTimer.verbose()) {
-						U.log("Task \"", task.taskName(), "\" already running, NOT adding to queue.");
+						U.log("Task ", task.taskName(), " is not quiet. Not scheduling.");
 					}
 					continue;
 				}
 
 				if (task.isBouncing()) {
-					U.log("Task \"", task.taskName(), "\" is BOUNCING, NOT adding to queue.");
+					if (AppTimer.verbose()) {
+						U.log("Task ", task.taskName(), " is BOUNCING. Not scheduling.");
+					}
 					continue;
 				}
 
-				NSArray<AppTaskInstance> lastSuccessful = AppTaskInstance.fetchAppTaskInstances(
-						ec,
-						ERXQ.and(
-								AppTaskInstance.END_TIME.isNotNull(),
-								AppTaskInstance.RESULT.is(0),
-								AppTaskInstance.TASK.is(task)),
-						AppTaskInstance.END_TIME.descs());
+				AppTaskInstance lastSuccessful = task.latestSuccessfulInstance();
 
-				if (lastSuccessful.isEmpty()) {
+				if (lastSuccessful == null) {
 
 					U.log("for: ", task, " no previous instances, so RUN");
 
 					runnables.add(task.taskName());
 
 					continue;
-
 				}
-
-				AppTaskInstance lastRun = lastSuccessful.get(0);
 
 				/*
 				 * Handles checking for intervals: MINUTELY, HOURLY, TWICE_DAILY and DAILY.
@@ -89,7 +80,7 @@ public class AppScheduler extends Thread {
 					long interval_diff = U.intervalTimes.get(interval);
 
 					long now = System.currentTimeMillis();
-					long then = lastRun.endTime();
+					long then = lastSuccessful.endTime();
 
 					long diff = now - then;
 
@@ -117,7 +108,7 @@ public class AppScheduler extends Thread {
 					int interval = minutes * (int) U.one_minute;
 
 					long now = System.currentTimeMillis();
-					long then = lastRun.endTime();
+					long then = lastSuccessful.endTime();
 
 					long diff = now - then;
 
@@ -145,7 +136,7 @@ public class AppScheduler extends Thread {
 					long interval = task.intervalDuration(task.intervalName());
 
 					long now = System.currentTimeMillis();
-					long then = lastRun.endTime();
+					long then = lastSuccessful.endTime();
 
 					long diff = now - then;
 				

@@ -6,7 +6,7 @@
     <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity = "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin = "anonymous">
     </script>
     <style>.table-striped { width: auto !important; }
-                                                td, th { text-align: center; }
+                                    td, th { text-align: center; }
     </style>
     <meta http-equiv = "refresh" content = "30" />
   </head>
@@ -22,82 +22,103 @@
             <wo:link pageName = "AppTaskCreatePage">New Task</wo:link>
           </wo:if>
         </p>
-        <table class = "table table-striped">
-          <caption>App Tasks</caption>
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Interval</th>
-              <th>State</th>
-              <wo:if condition = "$userCanWrite">
-                <th>Enable?</th>
-                <th>Launch?</th>
-              </wo:if>
-              <th>
-                <wo:if condition = "$displayingTasksOldestRan">
-                  <wo:link action = "$displayTasksSoonestToRun">Last Run</wo:link>
-                </wo:if>
-                <wo:else>
-                  <wo:link action = "$displayTasksOldestRan">Next to Run</wo:link>
-                </wo:else>
-              </th>
-              <th>Last Runtime</th>
-              <th>Last Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            <wo:loop list = "$tasks" item = "$task">
+        <p>
+          <table class = "table">
+            <caption>Threads</caption>
+            <wo:loop list = "$taskThreads" item = "$taskThread">
               <tr>
-                <td>
-                  <wo:ERXDataHyperlink pageName = "AppTaskPage" task = "$task"><wo:str value = "$task.fullName" /></wo:ERXDataHyperlink>
-                </td>
-                <td><wo:str value = "$task.intervalName" /></td>
-                <wo:if condition = "$taskIsActive">
-                  <td style = "background-color: #BBEA89;">active</td>
-                </wo:if>
-                <wo:if condition = "$taskIsInactive">
-                  <td style = "background-color: #ECE763;">inactive</td>
-                </wo:if>
-                <wo:if condition = "$task.isQueued">
-                  <td>queued</td>
-                </wo:if>
-                <wo:if condition = "$task.isRunning">
-                  <td style = "background-color: #F7D358;">running</td>
-                </wo:if>
-                <wo:if condition = "$userCanWrite">
-                  <td>
-                    <wo:if condition = "$task.isQuiet">
-                      <wo:link action = "$flipEnableTask">
-                        <wo:if condition = "$task.enabled">disable</wo:if>
-                        <wo:else>enable</wo:else>
-                      </wo:link>
-                    </wo:if>
-                  </td>
-                  <td>
-                    <wo:if condition = "$task.isQuiet">
-                      <wo:link action = "$enqueueTask">push</wo:link>
-                      &nbsp;-&nbsp; 
-                      <wo:link action = "$runTask">run</wo:link>
-                    </wo:if>
-                    <wo:if condition = "$task.isQueued">
-                      <wo:link action = "$dequeueTask">dequeue</wo:link>
-                    </wo:if>
-                    <wo:if condition = "$task.isRunning">
-                      <wo:link action = "$abortTask">abort</wo:link>
-                    </wo:if>
-                  </td>
-                </wo:if>
-                <td><wo:str value = "$task.lastInstanceAge" /></td>
-                <td>
-                  <wo:str value = "$task.latestInstance.runDuration" numberformat = "0" />
-                  <wo:if condition = "$task.latestInstance.runDuration">&nbsp;s</wo:if>
-                  <wo:if condition="$task.isRunning"><wo:str value="$task.runningInstanceAge" /></wo:if>
-                </td>
-                <td><wo:str value = "$task.latestInstance.result" numberformat = "0" /></td>
+                <td><wo:str value = "$taskThread" /></td>
               </tr>
             </wo:loop>
-          </tbody>
-        </table>
+          </table>
+          <table class = "table table-striped">
+            <caption>App Tasks</caption>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Valid</th>
+                <th>State</th>
+                <th>Interval</th>
+                <th>Enabled</th>
+                <wo:if condition = "$userCanWrite">
+                  <th>Enable?</th>
+                  <th>Launch?</th>
+                </wo:if>
+                <th>
+                  <wo:if condition = "$displayingTasksOldestRan">
+                    <wo:link action = "$displayTasksSoonestToRun">Last Run</wo:link>
+                  </wo:if>
+                  <wo:else>
+                    <wo:link action = "$displayTasksOldestRan">Next to Run</wo:link>
+                  </wo:else>
+                </th>
+                <th>Last Runtime</th>
+                <th>Last Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <wo:loop list = "$tasks" item = "$task">
+                <tr>
+                  <td>
+                    <wo:ERXDataHyperlink pageName = "AppTaskPage" task = "$task"><wo:str value = "$task.fullName" /></wo:ERXDataHyperlink>
+                  </td>
+                  <wo:if condition = "$task.isValid">
+                    <td style = "background-color: #BBEA89;">V</td>
+                  </wo:if>
+                  <wo:else>
+                    <td style = "background-color: #F7D358;">IV</td>
+                  </wo:else>
+                  <td><wo:str value = "$task.state" /></td>
+                  <td><wo:str value = "$task.intervalName" /></td>
+                  <wo:if condition = "$task.active">
+                    <td style = "background-color: #BBEA89;">active</td>
+                  </wo:if>
+                  <wo:else>
+                    <td style = "background-color: #ECE763;">inactive</td>
+                  </wo:else>
+                  <wo:if condition = "$task.isQueued">
+                    <td>queued</td>
+                  </wo:if>
+                  <wo:if condition = "$task.isRunning">
+                    <td style = "background-color: #F7D358;">running</td>
+                  </wo:if>
+                  <wo:if condition = "$userCanWrite">
+                    <td>
+                      <wo:if condition = "$task.isQuiet">
+                        <wo:link action = "$flipEnableTask">
+                          <wo:if condition = "$task.enabled">disable</wo:if>
+                          <wo:else>enable</wo:else>
+                        </wo:link>
+                      </wo:if>
+                    </td>
+                    <td>
+                      <wo:if condition = "$task.isQuiet">
+                        <wo:link action = "$enqueueTask">push</wo:link>
+                        &nbsp;-&nbsp; 
+                        <wo:link action = "$runTask">run</wo:link>
+                      </wo:if>
+                      <wo:if condition = "$task.isQueued">
+                        <wo:link action = "$dequeueTask">dequeue</wo:link>
+                      </wo:if>
+                      <wo:if condition = "$task.isRunning">
+                        <wo:link action = "$abortTask">abort</wo:link>
+                      </wo:if>
+                    </td>
+                  </wo:if>
+                  <td>
+                    <wo:str value = "$task.lastInstanceAge" />
+                    <wo:if condition = "$task.isRunning"><wo:str value = "$task.runningInstanceAge" /></wo:if>
+                  </td>
+                  <td>
+                    <wo:str value = "$task.latestInstance.runDuration" numberformat = "0" />
+                    <wo:if condition = "$task.latestInstance.runDuration">&nbsp;s</wo:if>
+                  </td>
+                  <td><wo:str value = "$task.latestInstance.result" numberformat = "0" /></td>
+                </tr>
+              </wo:loop>
+            </tbody>
+          </table>
+        </p>
       </wo:if>
     </div>
   </body>
